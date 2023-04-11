@@ -12,7 +12,7 @@ import {
   Image,
   Keyboard
 } from "react-native";
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { AntDesign } from '@expo/vector-icons';
 import Wheel from '../Components/Wheel.js'
 import {Gesture, GestureDetector} from 'react-native-gesture-handler';
@@ -24,6 +24,8 @@ import Animated, {
   runOnJS,
 } from 'react-native-reanimated';
 import ConfettiCannon from 'react-native-confetti-cannon';
+import { auth, db } from "../firebase";
+import { doc, setDoc, getDoc, onSnapshot, updateDoc, increment } from "firebase/firestore";
 
 export default function BankScreen () {
     const explosion = useRef(null)
@@ -31,6 +33,22 @@ export default function BankScreen () {
     const [currentAngle, setCurrentAngle] = useState(rotation.value);
     const [ celebrate, setCelebrate ] = useState(true)
     const [ value, setValue ] = useState(0)
+    const [ total, setTotal ] = useState(0)
+    
+    const userDoc = doc(db, "users", auth.currentUser.uid);
+
+    useEffect(() => {
+      const unsubscribe = onSnapshot(userDoc, (doc) => {
+        if (doc.exists()) {
+          setTotal(doc.data().total);
+        } else {
+          // doc.data() will be undefined in this case
+          console.log("No such document!");
+        }
+      });
+
+    return () => unsubscribe();
+    },[])
 
     const animatedStyles = useAnimatedStyle(() => {
       return {
@@ -87,15 +105,29 @@ export default function BankScreen () {
       getCurrentColor()
       let req = await fetch(`https://api.coinbase.com/v2/prices/${getCurrentCoin()}-USD/buy`)
       let res = await req.json()
-      setValue(res.data.amount)
+      const coinValue = Math.ceil(parseFloat(res.data.amount))
+      console.log(coinValue)
+      setValue(coinValue)
       if (celebrate) {
-        explosion.current.start()
+        // explosion.current.start()
+        try {
+          await updateDoc(userDoc, {
+            [getCurrentColor()]: increment(1),
+            "total": increment(coinValue)
+          })
+        }
+        catch (error) {
+            console.log(error.message)
+        }
+        // setTotal(0)
       }
       setCelebrate(celebrate => !celebrate)
+      
     }
 
     return (
         <SafeAreaView style={styles.container}>
+            <Text style={styles.netTxt}>NET WORTH: {total}</Text>
             <TouchableOpacity
             style={styles.button}
             onPress={handleClick}>
@@ -117,17 +149,16 @@ export default function BankScreen () {
                 </Animated.View>
               </View>
             </GestureDetector>
-          {!celebrate && 
-          <View style={{marginTop: 10, alignItems: 'center'}}>
-            <Text style={styles.text}>You just won: {getCurrentColor()}</Text>
-            <Text style={styles.text}>Value: ${value}</Text>
-          </View>}
-          <ConfettiCannon
+          <View style={{height: '10%', marginTop: 10, alignItems: 'center'}}>
+            <Text style={styles.text}>{celebrate ? "" : ("You just won: " + getCurrentColor())}</Text>
+            <Text style={styles.text}>{celebrate ? "" : ("Value: $" + value)}</Text>
+          </View>
+          {/* <ConfettiCannon
             count={200}
             origin={{x: -10, y: 0}}
             autoStart={false}
             ref={explosion}
-          />        
+          />         */}
     </SafeAreaView>
     )
 }
@@ -139,8 +170,14 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderRadius: 20,
     width: '90%',
+    height: '12%',
     padding: 20,
-    marginVertical: 40,
+    marginBottom: 40,
+  },
+  netTxt: {
+    color: 'white',
+    fontSize: 30,
+    marginBottom: 20
   },
    text: {
     color: 'white',

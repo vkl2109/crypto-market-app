@@ -27,10 +27,10 @@ export default function Wheel () {
                 </View>
             </View>
             <View style={styles.circleRow}>
-                <View style={[styles.pizza, styles.pizzaGreen]}>
+                <View style={[styles.pizza, styles.pizzaYellow]}>
                     <MaterialCommunityIcons style={styles.dogecoin} name="dog" size={50} color="white" />
                 </View>
-                <View style={[styles.pizza, styles.pizzaYellow]}>
+                <View style={[styles.pizza, styles.pizzaGreen]}>
                     <FontAwesome style={styles.dollar} name="money" size={50} color="white" />
                 </View>
             </View>
