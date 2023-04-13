@@ -15,8 +15,11 @@ import {
 
 export default function ProfileScreen () {
     return (
-        <SafeAreaView styles={styles.container}>
+        <SafeAreaView style={styles.container}>
             <Text>Profile Screen</Text>
+            <View style={styles.avatar}>
+              <Image style={styles.avatarImg} />
+            </View>
         </SafeAreaView>
     )
 }
@@ -26,6 +29,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     width: "100%",
+    backgroundColor: '#343a40',
     // backgroundColor: "#F3EDF7",
   },
 })

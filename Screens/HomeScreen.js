@@ -54,14 +54,14 @@ export default function HomeScreen () {
               <Text style={styles.sectionTitle}>DogeCoin: {dogeCoin}</Text>
               <FlatList horizontal={true}
               data={[...Array(dogeCoin)]}
-              renderItem={({item}) => <FontAwesome5 name="ethereum" size={50} color="white" />}
+              renderItem={({item}) => <MaterialCommunityIcons name="dog" size={50} color="white" />}
               />
             </View>
             <View style={styles.quarterView("#4361ee")}>
               <Text style={styles.sectionTitle}>Ethereum: {ethereum}</Text>
               <FlatList horizontal={true}
               data={[...Array(ethereum)]}
-              renderItem={({item}) => <MaterialCommunityIcons name="dog" size={50} color="white" />}
+              renderItem={({item}) => <FontAwesome5 name="ethereum" size={50} color="white" />}
               />
             </View>
             <View style={styles.quarterView("#06d6a0")}>

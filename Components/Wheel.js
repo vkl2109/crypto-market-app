@@ -40,9 +40,10 @@ export default function Wheel () {
 
 const styles = StyleSheet.create({
     circleRow: {width: '100%', height: '50%', flexDirection: 'row'},
-    pizza: {width: '50%', height: '100%', 
+    pizza: {width: '50%', height: '100%',
         justifyContent: 'center',
-        alignItems: 'center'},
+        alignItems: 'center'
+    },
     pizzaRed: {
         backgroundColor: '#ce4257',
     },
