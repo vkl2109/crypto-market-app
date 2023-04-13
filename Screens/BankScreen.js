@@ -11,7 +11,8 @@ import {
   ScrollView,
   Image,
   Keyboard,
-  Modal
+  Modal,
+  Switch
 } from "react-native";
 import React, { useState, useRef, useEffect } from 'react';
 import { Feather, Fontisto, AntDesign, MaterialIcons, FontAwesome, FontAwesome5, MaterialCommunityIcons } from '@expo/vector-icons';
@@ -39,6 +40,8 @@ export default function BankScreen () {
     const [ celebrate, setCelebrate ] = useState(true)
     const [ value, setValue ] = useState(0)
     const [ total, setTotal ] = useState(0)
+    const [isEnabled, setIsEnabled] = useState(false);
+    const toggleSwitch = () => setIsEnabled(previousState => !previousState);
     
     const userDoc = doc(db, "users", auth.currentUser.uid);
 
@@ -132,7 +135,9 @@ export default function BankScreen () {
       console.log(coinValue)
       setValue(coinValue)
       if (celebrate) {
-        // explosion.current.start()
+        if (isEnabled) {
+          explosion.current.start()
+        }
         try {
           await updateDoc(userDoc, {
             [getCurrentColor()]: increment(1),
@@ -162,6 +167,13 @@ export default function BankScreen () {
 
     return (
         <SafeAreaView style={styles.container}>
+            <Switch
+                trackColor={{false: '#767577', true: '#81b0ff'}}
+                thumbColor={isEnabled ? '#f5dd4b' : '#f4f3f4'}
+                ios_backgroundColor="#3e3e3e"
+                onValueChange={toggleSwitch}
+                value={isEnabled}
+              />
             <Text style={styles.netTxt}>NET WORTH: ${total}</Text>
             <TouchableOpacity
             style={styles.button('red')}
@@ -218,13 +230,13 @@ export default function BankScreen () {
           onRequestClose={() => setModal(!modal)}>
             <BlurView 
             style={styles.modalWrapper}
-            intensity={10}>
+            intensity={30}>
               <TouchableOpacity
               style={styles.modalWrapper}
               onPress={() => setModal(!modal)}>
                 <TouchableWithoutFeedback>
                   <View style={styles.innerModalWrapper}>
-                    <Text style={{fontWeight: 500, fontSize: 20, margin: 5}}>SOCIAL SECURITY</Text>
+                    <Text style={{fontWeight: 500, fontSize: 20, marginTop: 15}}>SOCIAL SECURITY</Text>
                     <View style={styles.pwinput}>
                       <TextInput 
                           style={{flex: 1}}
@@ -251,12 +263,12 @@ export default function BankScreen () {
         >
           hot singles in your area. one bitcoin each. cash out now to gain exclusive access to our models.
         </MarqueeText>
-          {/* <ConfettiCannon
+          {isEnabled && <ConfettiCannon
             count={200}
             origin={{x: -10, y: 0}}
             autoStart={false}
             ref={explosion}
-          />         */}
+          />        }
     </SafeAreaView>
     )
 }
@@ -270,12 +282,12 @@ const styles = StyleSheet.create({
     width: '90%',
     height: '12%',
     padding: 20,
-    marginBottom: 40,
+    marginBottom: 20,
   }),
   netTxt: {
     color: 'white',
     fontSize: 30,
-    marginBottom: 20
+    marginVertical: 10
   },
   pwinput: {
         borderWidth: 1,
